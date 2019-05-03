@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #import scipy
-from scipy.signal import find_peaks
+from scipy.signal import find_peaks_cwt
 import sys
 import argparse
 
@@ -18,11 +18,8 @@ def readfasta(inconn):
             seq = ""
         else:
             seq = seq + l
-    if l[0] == ">":
-        if len(header) > 0 and len(seq) > 0:
-            out.append((header, seq))
-        header = l
-        seq = ""
+    if len(header) > 0 and len(seq) > 0:
+        out.append((header, seq))
     return out
 
 def getlens(fadat):
@@ -39,10 +36,18 @@ def gethist(falens):
         out.append((i, falens.count(i)))
     return(out)
 
-def getpeaks(hist, count, threshold, distance, prominence):
+def getpeaks(hist, max_width, min_width):
     histcounts = [x[1] for x in hist]
-    out = find_peaks(histcounts, height = count, threshold = threshold, distance = distance, prominence = prominence)
-    return(out[0])
+    if not max_width:
+        mymax = 1000
+    else:
+        mymax = max_width
+    if not min_width:
+        mymin = 1
+    else:
+        mymin = min_width
+    out = find_peaks_cwt(histcounts, [x for x in range(mymin,mymax)])
+    return(out)
 
 def getfasta(peaks, hist, fadat):
     out = []
@@ -62,10 +67,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description = "Identify the reads that best represent each transcript in a cluster.")
     parser.add_argument("infasta", help="The input fasta in which to identify transcripts.")
-    parser.add_argument("-c", "--count", help="The minimum number of transcripts with matching lengths required for a hit (default=None).")
-    parser.add_argument("-t", "--threshold", help="The difference in counts between peak and neighboring region to call peak (default=None).")
-    parser.add_argument("-d", "--distance", help="The minimum distance between peaks (default=None).")
-    parser.add_argument("-p", "--prominence", help="The minimum prominence required to call a peak (default=None).")
+    parser.add_argument("-w", "--max_width", help="The largest acceptable peak width.")
+    parser.add_argument("-m", "--min_width", help="The smallest acceptable peak width.")
 
     args = parser.parse_args()
 
@@ -74,41 +77,31 @@ if __name__ == "__main__":
     else:
         inconn = open(args.infasta,"r")
 
-    if args.count:
-        count = args.count
+    if args.max_width:
+        max_width = int(args.max_width)
     else:
-        count = None
+        max_width = None
 
-    if args.threshold:
-        threshold = args.threshold
+    if args.min_width:
+        min_width = int(args.min_width)
     else:
-        threshold = None
-
-    if args.distance:
-        distance = args.distance
-    else:
-        distance = None
-
-    if args.prominence:
-        prominence = args.prominence
-    else:
-        prominence = None
+        min_width = None
 
     fadat = readfasta(inconn)
-    print("fadat:")
-    print(fadat)
+    #print("fadat:")
+    #print(fadat)
     falens = getlens(fadat)
-    print("falens:")
-    print(falens)
+    #print("falens:")
+    #print(falens)
     hist = gethist(falens)
-    print("hist:")
-    print(hist)
-    peaks = getpeaks(hist, count, threshold, distance, prominence)
-    print("peaks:")
-    print(peaks)
+    #print("hist:")
+    #print(hist)
+    peaks = getpeaks(hist, max_width, min_width)
+    #print("peaks:")
+    #print(peaks)
     peakfasta = getfasta(peaks, hist, fadat)
-    print("peakfasta:")
-    print(peakfasta)
+    #print("peakfasta:")
+    #print(peakfasta)
     writefasta(peakfasta)
 
     inconn.close()
