@@ -105,7 +105,7 @@ def get_len_peak(lens, percent_larger):
     return(out)
 
 def get_len_fasta(peak, fadat):
-    return([fadat[peak[0]]])
+    return(fadat[peak[0]])
 
 def get_lens_lenpeak(fadat):
     out = []
@@ -157,7 +157,7 @@ if __name__ == "__main__":
             if min_length:
                 peakfasta = [x for x in peakfasta if len(x[1]) >= min_length]
             if min_tran and len(peakfasta) <= min_tran:
-                peakfasta = len_peak_find(fadat, lenperc)
+                peakfasta = [len_peak_find(fadat, lenperc)]
                 #sys.stderr.write("this isn't done!\n") # in progress
         writefasta(peakfasta)
 
