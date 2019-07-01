@@ -67,7 +67,7 @@ def getpeaks(hist, max_width, min_width):
     else:
         mymin = min_width
     if len(histcounts) > 0 and mymin and mymax:
-        out = find_peaks_cwt(histcounts, [x for x in range(mymin,mymax)])
+        out = find_peaks_cwt(histcounts, [x for x in range(mymin,mymax+1)])
     else:
         out = array([], dtype=float64)
     return(out)
