@@ -86,6 +86,34 @@ def writefasta(fasta):
         print(i[0])
         print(i[1])
 
+def len_peak_find(fadat, lenperc):
+    falens = get_lens_lenpeak(fadat)
+    peaks = get_len_peak(falens, lenperc)
+    peakfasta = get_len_fasta(peaks, fadat)
+    return(peakfasta)
+
+def get_len_peak(lens, percent_larger):
+    slens = sorted(lens, reverse=True, key=lambda x: x[1])
+    index_to_take = min(int(round((len(slens) * (1.0 - percent_larger)))), len(slens)-1)
+    i=0
+    out = None
+    for j in slens:
+        if i==index_to_take:
+            out = j
+            break
+        i += 1
+    return(out)
+
+def get_len_fasta(peak, fadat):
+    return([fadat[peak[0]]])
+
+def get_lens_lenpeak(fadat):
+    out = []
+    for i,j in enumerate(fadat):
+        out.append((i,len(j[1])))
+    return(out)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description = "Identify the reads that best represent each transcript in a cluster.")
@@ -106,6 +134,7 @@ if __name__ == "__main__":
     min_width = None
     max_width = None
     min_tran = None
+    lenperc = 0.95
     if args.max_width:
         max_width = int(args.max_width)
     if args.min_width:
@@ -127,6 +156,9 @@ if __name__ == "__main__":
             peakfasta = getfasta(peaks, hist, fadat)
             if min_length:
                 peakfasta = [x for x in peakfasta if len(x[1]) >= min_length]
+            if min_tran and len(peakfasta) <= min_tran:
+                peakfasta = len_peak_find(fadat, lenperc)
+                #sys.stderr.write("this isn't done!\n") # in progress
         writefasta(peakfasta)
 
     inconn.close()
