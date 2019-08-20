@@ -86,26 +86,26 @@ def writefasta(fasta):
         print(i[0])
         print(i[1])
 
-def len_peak_find(fadat, lenperc):
+def len_peak_find(fadat, lenperc, num_to_take):
     falens = get_lens_lenpeak(fadat)
-    peaks = get_len_peak(falens, lenperc)
+    peaks = get_len_peak(falens, lenperc, num_to_take)
     peakfasta = get_len_fasta(peaks, fadat)
     return(peakfasta)
 
-def get_len_peak(lens, percent_larger):
+def get_len_peak(lens, percent_larger, num_to_take):
     slens = sorted(lens, reverse=True, key=lambda x: x[1])
     index_to_take = min(int(round((len(slens) * (1.0 - percent_larger)))), len(slens)-1)
-    i=0
     out = None
-    for j in slens:
+    for i in range(len(slens)):
         if i==index_to_take:
-            out = j
+            out = slens[i:(i+num_to_take)]
             break
-        i += 1
+    if not out:
+        exit("didn't have an out value in get_len_peak!")
     return(out)
 
-def get_len_fasta(peak, fadat):
-    return(fadat[peak[0]])
+def get_len_fasta(peaks, fadat):
+    return([fadat[peak[0]] for peak in peaks])
 
 def get_lens_lenpeak(fadat):
     out = []
@@ -157,7 +157,7 @@ if __name__ == "__main__":
             if min_length:
                 peakfasta = [x for x in peakfasta if len(x[1]) >= min_length]
             if min_tran and len(peakfasta) <= min_tran:
-                peakfasta = [len_peak_find(fadat, lenperc)]
+                peakfasta = len_peak_find(fadat, lenperc, min_tran)
                 #sys.stderr.write("this isn't done!\n") # in progress
         writefasta(peakfasta)
 
