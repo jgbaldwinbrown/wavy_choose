@@ -32,15 +32,15 @@ def printsum(summary, conn):
         conn.write(str(i) + "\n")
 
 if __name__ == "__main__":
-    if not os.path.isdir("testdir"):
-        os.mkdir("testdir")
+    if not os.path.isdir("simulated_tests/test_results/big"):
+        os.makedirs("simulated_tests/test_results/big")
     
     for mypeakcount in tqdm.tqdm([1, 2, 3, 4], desc="peaks"):
         for myreadcount in tqdm.tqdm([50, 100, 300,1000], desc="reads"):
             for mystdev in tqdm.tqdm([1, 5, 10, 30], desc="stdev"):
                 for myrep in tqdm.tqdm(range(3), desc="reps"):
                     mydist_and_sum = getdists(mystdev, myreadcount, mypeakcount, (1,1000))
-                    path = "testdir/choosetest_peaks%d_reads%d_sd%d_rep%d.fa" % (mypeakcount, myreadcount, mystdev, myrep)
+                    path = "simulated_tests/test_results/big/choosetest_peaks%d_reads%d_sd%d_rep%d.fa" % (mypeakcount, myreadcount, mystdev, myrep)
                     with open(path, "w") as conn:
                         printdist(mydist_and_sum[0], conn)
                     path2 = path.split('.')[0] + ".txt"
