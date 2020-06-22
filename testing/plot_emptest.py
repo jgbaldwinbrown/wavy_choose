@@ -10,8 +10,8 @@ import gzip
 def add_to_count(counts, header, length):
     name = header[1:].split(":")[0]
     if name not in counts:
-        counts["name"] = []
-    counts["name"].append(length)
+        counts[name] = []
+    counts[name].append(length)
 
 def get_counts(conn):
     counts = {}
@@ -53,8 +53,8 @@ def plothist(origlens, finallens, opath, cl_mincount):
             print("singular matrix:", opath)
             pass
 
-def plothist_all(allcounts, opath_prefix, cl_mincount):
-    for cluster, countsdict in allcounts.items():
+def plothist_all(all_counts, opath_prefix, cl_mincount):
+    for cluster, countsdict in all_counts.items():
         plothist(countsdict["orig"], countsdict["clustered"], opath_prefix + "_cluster_" + str(cluster) + "_test.pdf", cl_mincount)
 
 def main():
@@ -68,7 +68,8 @@ def main():
     with open(clustered_path, "r") as clusteredconn:
         all_clustered_counts = get_counts(clusteredconn)
     all_counts = combine_counts(all_orig_counts, all_clustered_counts)
-    plothist_all(allcounts, opath_prefix, cl_mincount)
+    print(all_counts)
+    plothist_all(all_counts, opath_prefix, cl_mincount)
 
 if __name__ == "__main__":
     main()
