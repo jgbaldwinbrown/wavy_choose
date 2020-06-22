@@ -47,6 +47,9 @@ def plothist(origlens, finallens, opath, cl_mincount):
             sns.distplot(origlens)
             for i in finallens:
                 plt.axvline(i, 0, color="red")
+            plt.xlabel("Sequence length")
+            plt.ylabel("Frequency")
+            plt.title("Sample transcript selection by read length")
             plt.savefig(opath)
             plt.close()
         except np.linalg.LinAlgError:
