@@ -87,13 +87,19 @@ Here, `ulimit -s unlimited` increases the process stack size to allow for deeper
 temp/minion_rnaseq_carnac/1/output_CARNAC.txt: temp/minion_rnaseq_carnac/1/input_CARNAC.txt 
 	ulimit -s unlimited && CARNAC-LR -f input_CARNAC.txt -o output_CARNAC.txt
 ```
-		
+
+## Run wavy_choose on Carnac's output
+
 Convert carnac files to fasta:
 
-carnac2fa.py is included with wavy_choose
+carnac2fa.py is included with wavy_choose.
 
 ```sh
-scripts/carnac/carnac2fa.py temp/minion_rnaseq_carnac/1/output_CARNAC.txt temp/minion_rnaseq_carnac/1/minion_rna1-4_1d_combo.fa
-	mkdir -p outs
-	python carnac2fa.py output_CARNAC.txt minion_rna_reads.fa > output_CARNAC.fa
+python carnac2fa.py output_CARNAC.txt minion_rna_reads.fa > output_CARNAC.fa
+```
+
+Run wavy_choose on the fasta version of carnac's output:
+
+```sh
+wavy_choose.py output_CARNAC.fa > wavy_choose_transcripts.fa
 ```
