@@ -84,8 +84,7 @@ paf_to_CARNAC.py ovlpfull.paf minion_rna_reads.fa input_CARNAC.txt
 Here, `ulimit -s unlimited` increases the process stack size to allow for deeper recursion, which carnac requires.
 
 ```sh
-temp/minion_rnaseq_carnac/1/output_CARNAC.txt: temp/minion_rnaseq_carnac/1/input_CARNAC.txt 
-	ulimit -s unlimited && CARNAC-LR -f input_CARNAC.txt -o output_CARNAC.txt
+ulimit -s unlimited && CARNAC-LR -f input_CARNAC.txt -o output_CARNAC.txt
 ```
 
 ## Run wavy_choose on Carnac's output
